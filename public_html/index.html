@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>to do list</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <div id ='addMemo'>
+            <input type ='text' id='todoText'>
+            <input type ="button" value="submit" id="submit">
+            <input type ='date' id= 'date'>
+        </div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        
+        <script>
+            $('#date').change(function(){
+                date =  $('#date').val();
+            })
+            var counter =1,
+                date ='"n/a"';
+            $('#submit').click(function(){
+                var todoinJson = '"'+$("#todoText").val()+'"',
+                    todo = $("#todoText").val();
+                url = "http://localhost:5984/todo/"+todo+counter;
+                $.ajax({type:"PUT",url: url,data:
+                     '{"task":'+todoinJson+', "deadline":'+date+'}',
+                     success:function(){alert("did it")}});
+                 counter++;
+            });
+             
+        </script>
+    </body>
+   
+</html>
+
+
