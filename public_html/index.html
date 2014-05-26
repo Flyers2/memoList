@@ -9,34 +9,71 @@ and open the template in the editor.
         <title>to do list</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
+        <style>
+            #view{
+                position:absolute;
+                left:6px;
+                bottom:20px;               
+            }
+            #stuffTodo{
+                    position:absolute;
+                    right:50%;
+                    top:40px;
+            }
+        </style>
     </head>
     <body>
+        <h1>To do list</h1>
         <div id ='addMemo'>
-            <input type ='text' id='todoText'>
+            <input type ='text' id='todoText'><br>
+            <input type ='date' id= 'date'><br>
             <input type ="button" value="submit" id="submit">
-            <input type ='date' id= 'date'>
+
+            <input type ='button' id='view' value ='view things to do'>
         </div>
+        <ul id ='stuffTodo'>
+            
+        </ul>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-        
+
         <script>
-            $('#date').change(function(){
-                date =  $('#date').val();
-            })
-            var counter =1,
-                date ='"n/a"';
-            $('#submit').click(function(){
-                var todoinJson = '"'+$("#todoText").val()+'"',
-                    todo = $("#todoText").val();
-                url = "http://localhost:5984/todo/"+todo+counter;
-                $.ajax({type:"PUT",url: url,data:
-                     '{"task":'+todoinJson+', "deadline":'+date+'}',
-                     success:function(){alert("did it")}});
-                 counter++;
+
+            var date = '"n/a"',
+                dburl = "http://localhost:5984/todo/";
+
+            $('#submit').click(function() {
+                todo = $('#todoText').val();
+                var obj = {task: todo, date: date};
+                objstringy = JSON.stringify(obj);
+                url = dburl + todo;
+                $.ajax({type: "PUT", url: url, data: objstringy,
+                    success: function() {
+                        alert("did it");
+                    }
+                });
             });
-             
+
+            $('#view').click(function() {
+                $.ajax({
+                    type: "GET",
+                    url: dburl + "_all_docs?include_docs=true",
+                    success: function(data) {
+                        data.rows.forEach(function(row) {
+                            console.log(row.doc);
+                            $('#stuffTodo').append("<li>"+row.doc._id + "   to do by: "+ row.doc.date+"</li>");
+                        });
+                        console.log(data);
+                    },
+                    dataType: "json"
+                });
+            });
+            $('#date').change(function() {
+                date = $('#date').val();
+            });
+
         </script>
     </body>
-   
+
 </html>
 
 
