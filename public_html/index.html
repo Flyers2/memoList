@@ -20,6 +20,13 @@ and open the template in the editor.
                     right:50%;
                     top:40px;
             }
+            .removers{
+                background-color: black;
+                color:white;
+                height:15px;
+                width:15px;
+                font-size: 6px;
+            }
         </style>
     </head>
     <body>
@@ -48,28 +55,46 @@ and open the template in the editor.
                 url = dburl + todo;
                 $.ajax({type: "PUT", url: url, data: objstringy,
                     success: function() {
-                        alert("did it");
+                         retreive();
                     }
                 });
             });
 
             $('#view').click(function() {
+                retreive();
+            });
+            $('#date').change(function() {
+                date = $('#date').val();
+            });
+            function retreive (){
                 $.ajax({
                     type: "GET",
                     url: dburl + "_all_docs?include_docs=true",
                     success: function(data) {
+                        $('#stuffTodo').empty();
                         data.rows.forEach(function(row) {
                             console.log(row.doc);
-                            $('#stuffTodo').append("<li>"+row.doc._id + "   to do by: "+ row.doc.date+"</li>");
+                            liID= row.doc._id;
+                            var li =$("<li>"+row.doc._id + " ---  to do by: "+ row.doc.date+"</li>").appendTo('#stuffTodo');
+                            //dburl.appendTo($('#row.doc._id'))
+                            $("<button class="+'removers'+">X</button>").appendTo(li).click(function(){
+                                $.ajax({
+                                    type:"DELETE",
+                                    url:dburl+row.doc._id+"/?rev="+row.doc._rev,
+                                    success:function(){
+                                        li.remove();
+                                    }
+                                });
+                                
+                            });
                         });
                         console.log(data);
                     },
                     dataType: "json"
                 });
-            });
-            $('#date').change(function() {
-                date = $('#date').val();
-            });
+            }
+            
+           retreive();
 
         </script>
     </body>
